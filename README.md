@@ -1,10 +1,11 @@
 # ai-journal
 
-**A local MCP server for journaling, organizing, and recalling your work.**
+**A local MCP server for journaling, organizing, recalling, and tracking your work.**
 Capture what each session taught you, let it organize into a clean, queryable
 structure, then recall and analyze the whole archive — recurring patterns, past
-lessons, blog-post material. Plain markdown stays the source of truth, and
-nothing leaves your machine.
+lessons, blog-post material. The tasks that fall out of the work live here too,
+linked to the entries that explain them. Plain markdown stays the source of
+truth, and nothing leaves your machine.
 
 ## The problem
 
@@ -42,7 +43,7 @@ Or capture without breaking flow:
 
 ## What it does
 
-Three capabilities, one local MCP server:
+Four capabilities, one local MCP server:
 
 1. **Journal** — capture however suits the moment: dump the whole session, jot
    a single lesson, or hand it a rough list to clean up. The `add_entry` tool
@@ -64,6 +65,12 @@ Three capabilities, one local MCP server:
    unused blog material, trace when a problem first appeared. This is the
    payoff: the journal as raw material for posts, talks, and not repeating old
    mistakes.
+4. **Track** — the tasks that come out of the work, as a *mutable* list: status,
+   priority, and what's blocked on what (`add_task`, `update_task`,
+   `list_tasks`). Each task links to the entries that give it context, so
+   resuming one surfaces the reasoning behind it. Tasks are journaling's mutable
+   sibling — separate files, their own rules, never bending the append-only
+   entries.
 
 ## Your data stays yours
 

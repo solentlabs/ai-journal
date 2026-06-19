@@ -11,7 +11,7 @@ from pathlib import Path
 
 from mcp.server.fastmcp import FastMCP
 
-from . import indexer
+from . import indexer, tasks
 from .config import DEFAULT_DB, load_config
 from .migrate import refresh_views
 from .model import Entry
@@ -22,6 +22,16 @@ mcp = FastMCP("ai-journal")
 
 def _sources():
     return {src.name: src for src in load_config()}
+
+
+def _managed_root(journal: str) -> Path:
+    """Resolve a configured managed journal's path, or raise a clear error."""
+    src = _sources().get(journal)
+    if src is None:
+        raise ValueError(f"Unknown journal '{journal}'. Configured: {list(_sources())}")
+    if src.mode != "managed":
+        raise ValueError(f"Journal '{journal}' is read-only (mode={src.mode})")
+    return src.path
 
 
 def _current_signatures() -> dict[str, str]:
@@ -93,14 +103,10 @@ def add_entry(
     journal must be a configured source with mode='managed'. entry_date
     defaults to today (YYYY-MM-DD). Returns the path of the new entry file.
     """
-    src = _sources().get(journal)
-    if src is None:
-        raise ValueError(f"Unknown journal '{journal}'. Configured: {list(_sources())}")
-    if src.mode != "managed":
-        raise ValueError(f"Journal '{journal}' is read-only (mode={src.mode})")
+    root = _managed_root(journal)
     when = date.fromisoformat(entry_date) if entry_date else date.today()
-    path = write_entry(src.path, when, title, body, themes=themes, tags=tags, blog_angles=blog_angles)
-    refresh_views(src.path)
+    path = write_entry(root, when, title, body, themes=themes, tags=tags, blog_angles=blog_angles)
+    refresh_views(root)
     _reindex()
     return str(path)
 
@@ -124,6 +130,102 @@ def suggest_themes(text: str, limit: int = 5) -> list[str]:
 def entries_over_time(theme: str | None = None, journal: str | None = None) -> list[dict]:
     """Entries per month, optionally filtered by theme or journal — activity over time."""
     return indexer.entries_over_time(_ensure_index(), theme=theme, journal=journal)
+
+
+@mcp.tool()
+def add_task(
+    journal: str,
+    title: str,
+    body: str = "",
+    priority: str = "medium",
+    blocked_by: list[str] | None = None,
+    entries: list[str] | None = None,
+) -> dict:
+    """Create a task in a managed journal. Status starts 'open'; priority is
+    high|medium|low; blocked_by lists task ids it waits on; entries are journal
+    entry paths giving it context. Tasks are mutable — unlike entries."""
+    try:
+        task = tasks.create_task(
+            _managed_root(journal), title, body=body, priority=priority, blocked_by=blocked_by, entries=entries
+        )
+    except tasks.TaskError as exc:
+        raise ValueError(str(exc)) from exc
+    return {"id": task.id, "status": task.status, "priority": task.priority}
+
+
+@mcp.tool()
+def update_task(
+    journal: str,
+    task_id: str,
+    status: str | None = None,
+    priority: str | None = None,
+    blocked_by: list[str] | None = None,
+    entries: list[str] | None = None,
+    body: str | None = None,
+) -> dict:
+    """Change a task in place — only the fields you pass. status: open|blocked|
+    done; priority: high|medium|low."""
+    try:
+        task = tasks.update_task(
+            _managed_root(journal),
+            task_id,
+            status=status,
+            priority=priority,
+            blocked_by=blocked_by,
+            entries=entries,
+            body=body,
+        )
+    except tasks.TaskError as exc:
+        raise ValueError(str(exc)) from exc
+    return {"id": task.id, "status": task.status, "priority": task.priority, "blocked_by": task.blocked_by}
+
+
+@mcp.tool()
+def list_tasks(journal: str | None = None, status: str | None = None, priority: str | None = None) -> list[dict]:
+    """Tasks across managed journals, open/high-priority first. Filter by
+    journal/status/priority. Each carries `ready` (every blocker done) and
+    `entries` (paths to pull context from with get_entry)."""
+    out: list[dict] = []
+    for src in _sources().values():
+        if src.mode != "managed" or (journal and src.name != journal):
+            continue
+        loaded = tasks.load_tasks(src.path)
+        by_id = {t.id: t for t in loaded}
+        for task in tasks.sorted_tasks(loaded):
+            if (status and task.status != status) or (priority and task.priority != priority):
+                continue
+            out.append(
+                {
+                    "journal": src.name,
+                    "id": task.id,
+                    "title": task.title,
+                    "status": task.status,
+                    "priority": task.priority,
+                    "blocked_by": task.blocked_by,
+                    "entries": task.entries,
+                    "ready": tasks.is_ready(task, by_id),
+                }
+            )
+    return out
+
+
+@mcp.tool()
+def get_task(journal: str, task_id: str) -> dict:
+    """Full task detail, including `entries` — read those with get_entry to pull
+    the context behind the task."""
+    try:
+        task = tasks.get_task(_managed_root(journal), task_id)
+    except tasks.TaskError as exc:
+        raise ValueError(str(exc)) from exc
+    return {
+        "id": task.id,
+        "title": task.title,
+        "status": task.status,
+        "priority": task.priority,
+        "blocked_by": task.blocked_by,
+        "entries": task.entries,
+        "body": task.body,
+    }
 
 
 @mcp.tool()

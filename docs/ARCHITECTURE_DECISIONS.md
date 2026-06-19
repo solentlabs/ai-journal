@@ -138,6 +138,23 @@ newly-seen journal format is a two-file drop with no test-code change, which is
 what the `CLAUDE.md` "parser changes ship with a fixture" rule means in
 practice.
 
+## Tasks are a mutable kind; entries stay append-only
+
+**Decision:** Journal entries are append-only and immutable (what happened).
+Tasks are a separate, **mutable** kind (what to do next) — `status`, `priority`,
+and `blocked_by` change over time — stored one markdown file per task under
+`<journal>/tasks/`, rewritten in place. Tasks link to entries (`entries:`) for
+context; entries never point at tasks.
+
+**Rationale:** A `status` field on entries was the first idea, but it fought the
+model — entries are append-only, status is mutable. Splitting by mutability
+resolves it cleanly: two kinds, different rules, neither bent. The driving use
+case is a running task list kept alongside the journal (priorities, items
+waiting on others) where picking a task back up should surface the entry that
+gave it context (UC7). Markdown stays the source of truth for both; a task is
+just the mutable file. Tasks live outside the disposable search index — they're
+real data, loaded from their files directly.
+
 ## Named `ai-journal`
 
 **Decision:** Package and repo are `ai-journal`, joining `ai-launcher` and

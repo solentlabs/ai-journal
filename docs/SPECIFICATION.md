@@ -28,6 +28,31 @@ source: JOURNAL.md:123      # migration provenance only; absent on new entries
 Frontmatter is YAML between `---` fences, always first in the file. A file
 under `entries/` without a `date` key is ignored by the loader.
 
+## 1a. Task File (managed journals)
+
+Path: `<root>/tasks/<id>.md`, where `id` is the slug of the title (same slug
+rules; collisions get `-2`, … suffixes). Unlike entries, tasks are **mutable** —
+the file is rewritten in place on update.
+
+```markdown
+---
+title: Cut the 0.1.0 release
+status: open                 # open | blocked | done
+priority: high               # high | medium | low
+blocked_by:                  # task ids this one waits on
+- configure-pypi
+entries:                     # entry paths giving this task its context
+- entries/2026-06/19-release-design.md
+created: '2026-06-19'
+updated: '2026-06-19'
+---
+
+<notes>
+```
+
+A task is *ready* when its status isn't `done` and every `blocked_by` task is
+`done`. Tasks reference entries for context; entries never reference tasks.
+
 ## 2. journals.toml
 
 Default location: `~/.config/ai-journal/journals.toml`.
@@ -126,6 +151,10 @@ edits to those.
 | `list_themes()` | (theme, journal, count) rows, unthemed shown as `(unthemed)` |
 | `suggest_themes(text, limit=5)` | Existing themes ranked by FTS similarity to `text`; suggestion only, writes nothing |
 | `entries_over_time(theme?, journal?)` | (month, count) rows ascending |
+| `add_task(journal, title, body?, priority=medium, blocked_by?, entries?)` | Create a task (status `open`) in a managed journal; returns its id |
+| `update_task(journal, task_id, status?, priority?, blocked_by?, entries?, body?)` | Mutate a task in place; only the passed fields change |
+| `list_tasks(journal?, status?, priority?)` | Tasks, open/high-priority first; each carries `ready` and `entries` |
+| `get_task(journal, task_id)` | Full task detail incl. `entries` to pull context via `get_entry` |
 | `reindex()` | Full rebuild from sources |
 
 `body` is freeform: a whole-session dump, a single lesson, or a tidied-up

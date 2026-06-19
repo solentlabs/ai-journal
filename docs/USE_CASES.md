@@ -84,5 +84,21 @@ ai-journal -- ai-journal serve`, run `scan`/`migrate` on whatever they have.
 Shippable Claude Code skills (capture + maintenance) package the habit, not
 just the engine.
 
-**Status:** Engine, server, CLI, intake, and consolidation are built.
-Capture/maintenance skills not yet shipped.
+**Status:** Engine, server, CLI, intake, consolidation, and the bundled
+capture/maintenance skills are built.
+
+## UC7 — Track tasks with the context behind them
+
+**Situation:** Alongside the journal there's a running task list — some items
+top priority, some waiting on others — and picking one back up later means
+re-finding the entry that explains *why* it matters.
+
+**Flow:** `add_task`/`update_task`/`list_tasks` manage a mutable task kind
+(status, priority, `blocked_by`). `list_tasks` returns the ready-to-pick-up set
+(blockers done) and each task's linked `entries`; `get_entry` on those pulls the
+context. Tasks are markdown files under `tasks/`, separate from append-only
+entries.
+
+**Why it matters:** Insights and intentions live together. The journal already
+holds *what you learned*; tasks add *what's left to do about it*, linked so the
+reasoning is one hop away when you resume.

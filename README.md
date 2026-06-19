@@ -6,8 +6,6 @@ structure, then recall and analyze the whole archive — recurring patterns, pas
 lessons, blog-post material. Plain markdown stays the source of truth, and
 nothing leaves your machine.
 
-> Status: pre-alpha, under active development. Not yet on PyPI.
-
 ## The problem
 
 You journal the hard-won lessons — the debugging pattern, the process failure,
@@ -125,7 +123,6 @@ ai-journal refresh ~/journal             # regenerate JOURNAL.md + theme views
 | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Components, data flow, journal modes, trust boundaries |
 | [docs/SPECIFICATION.md](docs/SPECIFICATION.md) | Entry format, journals.toml, parser rules, tool/CLI contracts |
 | [docs/ARCHITECTURE_DECISIONS.md](docs/ARCHITECTURE_DECISIONS.md) | The "why" behind each design choice |
-| [docs/ROADMAP.md](docs/ROADMAP.md) | Open work, ordered: release, product, hardening, exploratory |
 | [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) | Dev environment setup, make targets, tooling, troubleshooting |
 
 ## Development

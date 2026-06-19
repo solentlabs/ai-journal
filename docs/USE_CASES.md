@@ -74,7 +74,7 @@ by hand. Storage is bounded by month, so no file grows without limit.
 **Why it matters:** The original journal decayed precisely because its
 upkeep was a human chore. Structural prevention beats scheduled cleanup.
 
-## UC6 — Someone else adopts it (roadmap)
+## UC6 — Someone else adopts it
 
 **Situation:** Another developer wants the same capture/query/intake loop
 for their own journals.
@@ -84,5 +84,5 @@ ai-journal -- ai-journal serve`, run `scan`/`migrate` on whatever they have.
 Shippable Claude Code skills (capture + maintenance) package the habit, not
 just the engine.
 
-**Status:** Engine, server, CLI, and intake are built. Not yet published to
-PyPI; capture/maintenance skills not yet shipped.
+**Status:** Engine, server, CLI, intake, and consolidation are built.
+Capture/maintenance skills not yet shipped.

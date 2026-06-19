@@ -13,7 +13,6 @@
 | Formats and contracts (entry files, journals.toml, parser rules, tool surface) | `docs/SPECIFICATION.md` |
 | The "why" behind the design | `docs/ARCHITECTURE_DECISIONS.md` |
 | What the product is for | `docs/USE_CASES.md` |
-| Open work and priorities | `docs/ROADMAP.md` |
 | Project status, source inventory, migration history | `.claude/memory/` (gitignored, session knowledge) |
 
 ## Hard Constraints

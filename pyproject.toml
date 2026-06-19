@@ -14,7 +14,6 @@ authors = [
 ]
 keywords = ["journal", "mcp", "llm", "knowledge-management", "markdown", "full-text-search"]
 classifiers = [
-    "Development Status :: 2 - Pre-Alpha",
     "Intended Audience :: Developers",
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",

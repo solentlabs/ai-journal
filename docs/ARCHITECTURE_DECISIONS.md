@@ -77,7 +77,7 @@ library. No embeddings, no vector store, no services.
 search answers most real questions, requires zero infrastructure, and keeps
 the install light. The consumer is usually an LLM that can reformulate
 queries — which compensates for the literal-matching weakness that embeddings
-would solve. Embeddings remain a roadmap option behind the same tool surface.
+would solve. Embeddings remain a future option behind the same tool surface.
 
 ## MCP server as the primary interface, CLI as the secondary
 
@@ -144,6 +144,6 @@ practice.
 `ai-monitor` as a product family.
 
 **Rationale:** Family coherence, search obviousness, and a deliberate PyPI
-land grab (name verified free 2026-06-11; unclaimed until first publish).
-Nautical names (shipslog, soundings) were considered and rejected as too
-cute for a tool meant for strangers to find.
+land grab (name verified free 2026-06-11). Nautical names (shipslog,
+soundings) were considered and rejected as too cute for a tool meant for
+strangers to find.

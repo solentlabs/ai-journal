@@ -68,6 +68,7 @@ words:
   - yzhang
 
   # SQLite / stdlib internals
+  - executemany
   - executescript
   - fromlist
   - lastrowid

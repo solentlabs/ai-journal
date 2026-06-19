@@ -55,6 +55,11 @@ CREATE TABLE IF NOT EXISTS entries (
 CREATE VIRTUAL TABLE IF NOT EXISTS entries_fts USING fts5(
     title, body, content='entries', content_rowid='id'
 );
+CREATE TABLE IF NOT EXISTS entry_themes (
+    entry_id INTEGER NOT NULL,
+    theme TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_entry_themes_theme ON entry_themes (theme);
 """
 
 
@@ -84,6 +89,10 @@ def build_index(db_path: Path, entries: list[tuple[str, Entry]]) -> int:
                 "INSERT INTO entries_fts (rowid, title, body) VALUES (?,?,?)",
                 (cur.lastrowid, entry.title or "", entry.body),
             )
+            conn.executemany(
+                "INSERT INTO entry_themes (entry_id, theme) VALUES (?,?)",
+                [(cur.lastrowid, t) for t in entry.themes],
+            )
         conn.commit()
         return conn.execute("SELECT count(*) FROM entries").fetchone()[0]
     finally:
@@ -111,10 +120,12 @@ def search(
             WHERE entries_fts MATCH ?
         """
         params: list = [_sanitize_fts_query(query)]
-        for column, value in (("journal", journal), ("theme", theme)):
-            if value:
-                sql += f" AND e.{column} = ?"
-                params.append(value)
+        if journal:
+            sql += " AND e.journal = ?"
+            params.append(journal)
+        if theme:
+            sql += " AND e.id IN (SELECT entry_id FROM entry_themes WHERE theme = ?)"
+            params.append(theme)
         if since:
             sql += " AND e.date >= ?"
             params.append(since)
@@ -149,8 +160,7 @@ def suggest_themes(db_path: Path, text: str, limit: int = 5, hits: int = 20) -> 
     Finds entries similar to ``text``, tallies the themes of the top ``hits``
     matches, and returns the most common existing themes, most-frequent first.
     Returns [] when nothing matches. Suggestion only — writes nothing; the
-    caller proposes the results for confirmation. (The index stores one theme
-    per entry, so suggestions come from primary themes of similar entries.)
+    caller proposes the results for confirmation.
     """
     query = _fts_or_query(text)
     if not query:
@@ -159,10 +169,10 @@ def suggest_themes(db_path: Path, text: str, limit: int = 5, hits: int = 20) -> 
     conn.row_factory = sqlite3.Row
     try:
         rows = conn.execute(
-            "SELECT e.theme AS theme FROM entries_fts "
-            "JOIN entries e ON e.id = entries_fts.rowid "
-            "WHERE entries_fts MATCH ? AND e.theme IS NOT NULL "
-            "ORDER BY bm25(entries_fts) LIMIT ?",
+            "SELECT t.theme AS theme FROM "
+            "(SELECT entries_fts.rowid AS id, bm25(entries_fts) AS rank FROM entries_fts "
+            " WHERE entries_fts MATCH ? ORDER BY rank LIMIT ?) hit "
+            "JOIN entry_themes t ON t.entry_id = hit.id",
             (query, hits),
         ).fetchall()
     finally:
@@ -178,8 +188,14 @@ def list_themes(db_path: Path) -> list[dict]:
         return [
             dict(r)
             for r in conn.execute(
-                "SELECT coalesce(theme, '(unthemed)') AS theme, journal, count(*) AS entries "
-                "FROM entries GROUP BY theme, journal ORDER BY entries DESC"
+                "SELECT t.theme AS theme, e.journal AS journal, count(*) AS entries "
+                "FROM entry_themes t JOIN entries e ON e.id = t.entry_id "
+                "GROUP BY t.theme, e.journal "
+                "UNION ALL "
+                "SELECT '(unthemed)' AS theme, journal, count(*) AS entries "
+                "FROM entries WHERE id NOT IN (SELECT entry_id FROM entry_themes) "
+                "GROUP BY journal "
+                "ORDER BY entries DESC"
             )
         ]
     finally:
@@ -193,7 +209,7 @@ def entries_over_time(db_path: Path, theme: str | None = None, journal: str | No
         sql = "SELECT substr(date,1,7) AS month, count(*) AS entries FROM entries WHERE 1=1"
         params: list = []
         if theme:
-            sql += " AND theme = ?"
+            sql += " AND id IN (SELECT entry_id FROM entry_themes WHERE theme = ?)"
             params.append(theme)
         if journal:
             sql += " AND journal = ?"

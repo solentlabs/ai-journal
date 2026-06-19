@@ -66,6 +66,21 @@ def test_suggest_themes_empty_on_no_match(tmp_path):
     assert suggest_themes(make_db(tmp_path), "xylophone zucchini") == []
 
 
+def test_all_themes_indexed_not_just_primary(tmp_path):
+    # An entry with several themes is findable and counted under every one,
+    # not only its first (regression: the index once stored themes[0] only).
+    db = tmp_path / "idx.db"
+    build_index(
+        db, [("tech", make_entry(date(2026, 1, 1), "Dual", "parser notes worth a blog post", ["parser", "blog"]))]
+    )
+    listed = {(r["theme"], r["entries"]) for r in list_themes(db)}
+    assert ("parser", 1) in listed and ("blog", 1) in listed
+    # filter by the SECONDARY theme finds it
+    assert [r["title"] for r in search(db, "parser OR blog", theme="blog")] == ["Dual"]
+    # suggestions surface both themes
+    assert set(suggest_themes(db, "parser blog")) == {"parser", "blog"}
+
+
 def test_search_handles_hyphenated_terms(tmp_path):
     # A hyphenated bareword (e.g. "fleet-relative") must not leak a raw
     # FTS5/SQLite error, and must still match the entry that contains it.

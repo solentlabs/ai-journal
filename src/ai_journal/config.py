@@ -34,3 +34,28 @@ def load_config(config_path: Path | None = None) -> list[JournalSource]:
             )
         )
     return sources
+
+
+def add_journal(
+    name: str,
+    path: Path,
+    mode: str = "managed",
+    config_path: Path | None = None,
+) -> bool:
+    """Append a ``[[journal]]`` stanza to journals.toml, creating it if absent.
+
+    Returns False (changing nothing) if a journal with this name is already
+    configured. The path is written verbatim; ``load_config`` expands it.
+    """
+    cfg = config_path or DEFAULT_CONFIG
+    if cfg.exists():
+        if any(src.name == name for src in load_config(cfg)):
+            return False
+        existing = cfg.read_text(encoding="utf-8").rstrip("\n")
+        prefix = f"{existing}\n\n" if existing else ""
+    else:
+        cfg.parent.mkdir(parents=True, exist_ok=True)
+        prefix = ""
+    stanza = f'[[journal]]\nname = "{name}"\npath = "{path}"\nmode = "{mode}"\n'
+    cfg.write_text(prefix + stanza, encoding="utf-8")
+    return True

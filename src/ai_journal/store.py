@@ -23,6 +23,25 @@ def is_managed(root: Path) -> bool:
     return (root / "entries").is_dir()
 
 
+def init_journal(root: Path, name: str | None = None, config_path: Path | None = None) -> tuple[Path, bool]:
+    """Scaffold a new managed journal and register it in journals.toml.
+
+    Creates ``root/entries/`` (the marker of a managed journal) and appends a
+    ``[[journal]]`` stanza. Returns ``(resolved_root, registered)``, where
+    ``registered`` is False if a journal of that name was already configured.
+    Raises ``FileExistsError`` if ``root`` is already a managed journal — never
+    clobbers an existing one.
+    """
+    from .config import add_journal
+
+    root = root.expanduser().resolve()
+    if is_managed(root):
+        raise FileExistsError(f"{root} is already a managed journal (has entries/)")
+    (root / "entries").mkdir(parents=True, exist_ok=True)
+    registered = add_journal(name or root.name, root, "managed", config_path)
+    return root, registered
+
+
 def load_source(source) -> list[Entry]:
     """Load entries for a configured JournalSource (managed dir, plain dir, or file)."""
     from .intake import scan_journal

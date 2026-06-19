@@ -11,7 +11,7 @@ from .intake import format_report, scan_journal
 from .migrate import apply_migration
 from .model import Entry
 from .parser import parse_file
-from .store import is_managed, load_managed
+from .store import init_journal, is_managed, load_managed
 
 
 def _collect_entries(roots: list[Path]) -> list[tuple[str, Entry]]:
@@ -72,12 +72,44 @@ def _consolidate(args: argparse.Namespace) -> int:
     return 0
 
 
+def _init(args: argparse.Namespace) -> int:
+    try:
+        root, registered = init_journal(args.path, name=args.name)
+    except FileExistsError as exc:
+        print(exc)
+        return 1
+    label = args.name or root.name
+    print(f"Created managed journal at {root}")
+    if registered:
+        print(f"Registered '{label}' in journals.toml")
+    else:
+        print(f"A journal named '{label}' is already configured — left it unchanged")
+    print("Capture with the add_entry tool, or run `ai-journal serve` for the MCP.")
+    return 0
+
+
+def _search(args: argparse.Namespace) -> int:
+    results = search(args.db, args.query, limit=args.limit, theme=args.theme, since=args.since, until=args.until)
+    if not results:
+        print("No matches.")
+    for row in results:
+        title = row["title"] or "(untitled)"
+        print(f"\n{row['date']}  [{row['theme']}]  {title}")
+        print(f"  {row['source']}:{row['line']}")
+        print(f"  {row['snippet']}")
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="ai-journal")
     sub = parser.add_subparsers(dest="command", required=True)
 
     p_scan = sub.add_parser("scan", help="dry-run intake report for a journal directory")
     p_scan.add_argument("root", type=Path)
+
+    p_init = sub.add_parser("init", help="scaffold a new managed journal and register it in journals.toml")
+    p_init.add_argument("path", type=Path, help="directory for the new managed journal")
+    p_init.add_argument("--name", help="journal name in journals.toml (default: directory name)")
 
     p_migrate = sub.add_parser("migrate", help="migrate a journal to managed layout")
     p_migrate.add_argument("root", type=Path)
@@ -116,6 +148,8 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.command == "scan":
         print(format_report(scan_journal(args.root)))
+    elif args.command == "init":
+        return _init(args)
     elif args.command == "migrate":
         return _migrate(args)
     elif args.command == "consolidate":
@@ -136,14 +170,7 @@ def main(argv: list[str] | None = None) -> int:
 
         serve_main()
     elif args.command == "search":
-        results = search(args.db, args.query, limit=args.limit, theme=args.theme, since=args.since, until=args.until)
-        if not results:
-            print("No matches.")
-        for row in results:
-            title = row["title"] or "(untitled)"
-            print(f"\n{row['date']}  [{row['theme']}]  {title}")
-            print(f"  {row['source']}:{row['line']}")
-            print(f"  {row['snippet']}")
+        return _search(args)
     return 0
 
 

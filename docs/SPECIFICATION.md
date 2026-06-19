@@ -136,8 +136,10 @@ the only structured fields.
 
 | Command | Purpose |
 |---------|---------|
+| `init <path> [--name]` | Scaffold a new managed journal and register it in journals.toml |
 | `scan <root>` | Dry-run intake report |
 | `migrate <root> [--apply]` | Dry-run by default; apply per §5 |
+| `consolidate <dest> --from <path>... [--apply]` | Consolidate sources into a fresh managed journal; dry-run by default |
 | `reindex <roots...> --db <path>` | Build index from explicit paths |
 | `search <query> --db <path> [--limit/--theme/--since/--until]` | Query an index |
 | `refresh <root>` | Regenerate views per §6 |

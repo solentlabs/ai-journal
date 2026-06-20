@@ -1,5 +1,10 @@
 # ai-journal-mcp
 
+[![PyPI](https://img.shields.io/pypi/v/ai-journal-mcp)](https://pypi.org/project/ai-journal-mcp/)
+[![Python](https://img.shields.io/pypi/pyversions/ai-journal-mcp)](https://pypi.org/project/ai-journal-mcp/)
+[![CI](https://github.com/solentlabs/ai-journal-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/solentlabs/ai-journal-mcp/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/pypi/l/ai-journal-mcp)](LICENSE)
+
 **A local MCP server for journaling, organizing, recalling, and tracking your work.**
 Capture what each session taught you, let it organize into a clean, queryable
 structure, then recall and analyze the whole archive — recurring patterns, past
@@ -88,9 +93,10 @@ Four capabilities, one local MCP server:
 
 ## Quickstart
 
+Install from PyPI (Python 3.11+):
+
 ```bash
-git clone https://github.com/solentlabs/ai-journal-mcp && cd ai-journal-mcp
-./scripts/setup.sh          # Python 3.11+: creates .venv, installs the tool
+pip install "ai-journal-mcp[server]"   # MCP server + CLI; drop [server] for CLI-only
 ```
 
 Register your journals in `~/.config/ai-journal-mcp/journals.toml`:

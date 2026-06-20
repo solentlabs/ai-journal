@@ -133,21 +133,28 @@ destroys text. Rescue is idempotent.
 ## 7. Search Index
 
 SQLite at `~/.local/share/ai-journal-mcp/index.db` (CLI accepts `--db`).
-Tables: `entries` (journal, date, title, theme, source, line, body) +
+Tables: `entries` (journal, date, title, theme, source, line, body, `kind`) +
 `entries_fts` (FTS5, external content). Rebuilt from scratch on `reindex`;
 deleting the file is always safe. `theme` is the entry's first theme.
 
+**Both kinds are indexed.** `kind` is `entry` or `task`. Tasks from managed
+journals are indexed alongside entries so `search_journal` spans them; a task's
+`tags` and `status` are folded into its searchable body (so "blog" matches a
+task tagged `blog`), its `source` is the task file, and its `date` is the task's
+`updated`. Entry-only views (`list_themes`, `entries_over_time`) ignore tasks.
+
 **Staleness self-healing (server only):** before serving a query, the server
-compares the index mtime against each managed journal's `JOURNAL.md` (touched
-on every write) and each file source's mtime, rebuilding if any is newer.
-Directory-indexed sources are not deep-scanned — run `reindex` after bulk
-edits to those.
+compares each source's stored content signature against its current one,
+rebuilding if any differs. A managed journal's signature is its `JOURNAL.md`
+(touched on every entry write) combined with a hash of `tasks/` (so a task
+add/edit/delete also triggers a rebuild); a file source is its mtime+size; a
+raw indexed directory is a hash over its `.md` files (add/edit/delete-sensitive).
 
 ## 8. MCP Tool Surface
 
 | Tool | Contract |
 |------|----------|
-| `search_journal(query, journal?, theme?, since?, until?, limit=10)` | FTS5 query syntax; date bounds inclusive `YYYY-MM-DD`; returns ranked rows with snippet and `source` path |
+| `search_journal(query, journal?, theme?, since?, until?, limit=10)` | FTS5 query syntax; date bounds inclusive `YYYY-MM-DD`; returns ranked rows with snippet, `source` path, and `kind` (`entry`/`task`) — spans entries *and* tasks |
 | `get_entry(source)` | Full file text; rejects paths outside configured journals |
 | `add_entry(journal, title, body, themes?, tags?, blog_angles?, entry_date?)` | Managed journals only; writes entry, refreshes views, reindexes; returns the new path |
 | `list_themes()` | (theme, journal, count) rows, unthemed shown as `(unthemed)` |

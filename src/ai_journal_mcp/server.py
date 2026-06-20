@@ -51,9 +51,12 @@ def _ensure_index() -> Path:
 def _reindex() -> int:
     sources = _sources()
     pairs: list[tuple[str, Entry]] = []
+    task_pairs: list[tuple[str, tasks.Task]] = []
     for src in sources.values():
         pairs.extend((src.name, entry) for entry in load_source(src))
-    count = indexer.build_index(DEFAULT_DB, pairs)
+        if src.mode == "managed":
+            task_pairs.extend((src.name, t) for t in tasks.load_tasks(src.path))
+    count = indexer.build_index(DEFAULT_DB, pairs, task_pairs)
     indexer.write_signatures(DEFAULT_DB, {src.name: indexer.source_signature(src.path) for src in sources.values()})
     return count
 
@@ -72,7 +75,9 @@ def search_journal(
     query uses SQLite FTS5 syntax (words, "exact phrases", AND/OR/NOT).
     journal/theme filter to one journal or theme; since/until are
     YYYY-MM-DD inclusive bounds. Results are ranked, with snippets and a
-    source path usable with get_entry.
+    source path usable with get_entry. Spans both journal entries and tasks —
+    each result carries `kind` ('entry' or 'task'); a task's tags and status are
+    searchable too (so "blog" surfaces a task tagged blog).
     """
     return indexer.search(_ensure_index(), query, limit=limit, journal=journal, theme=theme, since=since, until=until)
 

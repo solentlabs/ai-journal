@@ -141,3 +141,31 @@ def test_list_themes_and_over_time(journals):
     assert {"modems", "(unthemed)"} <= themes
     months = server.entries_over_time(journal="technical")
     assert months == [{"month": "2026-06", "entries": 1}]
+
+
+def test_tasks_are_searchable_and_tagged_words_match(journals):
+    # a task in a managed journal must be findable by search_journal, by its
+    # body AND by a tag word, and must carry kind='task'
+    server.add_task("technical", "Write the staleness post", body="signature based detection", tags=["blog"])
+    # found by body text
+    hit = server.search_journal("signature")
+    assert hit and hit[0]["title"] == "Write the staleness post"
+    assert hit[0]["kind"] == "task"
+    # found by the tag word "blog" even though it's not in the title/body prose
+    assert any(h["title"] == "Write the staleness post" for h in server.search_journal("blog"))
+    # entry-only views are not polluted by the task
+    assert all(t["theme"] != "blog" for t in server.list_themes())
+    assert server.entries_over_time(journal="technical") == [{"month": "2026-06", "entries": 1}]
+
+
+def test_new_task_makes_index_stale_and_self_heals(journals):
+    from ai_journal_mcp.migrate import refresh_views
+
+    # give the managed journal a JOURNAL.md (real-world state): now the signature
+    # is JOURNAL.md-based, and a task add touches only tasks/ — the tasks/ hash
+    # folded into the signature is what must trigger the rebuild
+    refresh_views(journals)
+    server.reindex()
+    assert server.search_journal("xylophone") == []
+    server.add_task("technical", "Buy a xylophone", body="odd instrument")
+    assert server.search_journal("xylophone")[0]["kind"] == "task"

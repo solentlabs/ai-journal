@@ -13,6 +13,7 @@ from collections import Counter
 from pathlib import Path
 
 from .model import Entry
+from .tasks import Task
 
 _FTS_OPERATORS = {"AND", "OR", "NOT", "NEAR"}
 _FTS_TOKEN = re.compile(r'"[^"]*"|[()]|[^\s()]+')
@@ -51,7 +52,8 @@ CREATE TABLE IF NOT EXISTS entries (
     theme TEXT,
     source TEXT NOT NULL,
     line INTEGER NOT NULL,
-    body TEXT NOT NULL
+    body TEXT NOT NULL,
+    kind TEXT NOT NULL DEFAULT 'entry'
 );
 CREATE VIRTUAL TABLE IF NOT EXISTS entries_fts USING fts5(
     title, body, content='entries', content_rowid='id'
@@ -68,8 +70,15 @@ CREATE TABLE IF NOT EXISTS source_meta (
 """
 
 
-def build_index(db_path: Path, entries: list[tuple[str, Entry]]) -> int:
-    """(journal_name, entry) pairs -> fresh index. Returns row count."""
+def build_index(
+    db_path: Path,
+    entries: list[tuple[str, Entry]],
+    tasks: list[tuple[str, Task]] | None = None,
+) -> int:
+    """(journal_name, entry) pairs + optional (journal_name, task) pairs -> fresh
+    index. Tasks are indexed alongside entries so they are searchable; their
+    tags and status are folded into the FTS body so a query like "blog" surfaces
+    a task tagged ``blog``. Returns total row count."""
     db_path.parent.mkdir(parents=True, exist_ok=True)
     if db_path.exists():
         db_path.unlink()
@@ -79,7 +88,8 @@ def build_index(db_path: Path, entries: list[tuple[str, Entry]]) -> int:
         for journal, entry in entries:
             theme = entry.themes[0] if entry.themes else None
             cur = conn.execute(
-                "INSERT INTO entries (journal, date, title, theme, source, line, body) VALUES (?,?,?,?,?,?,?)",
+                "INSERT INTO entries (journal, date, title, theme, source, line, body, kind) "
+                "VALUES (?,?,?,?,?,?,?, 'entry')",
                 (
                     journal,
                     entry.date.isoformat(),
@@ -97,6 +107,26 @@ def build_index(db_path: Path, entries: list[tuple[str, Entry]]) -> int:
             conn.executemany(
                 "INSERT INTO entry_themes (entry_id, theme) VALUES (?,?)",
                 [(cur.lastrowid, t) for t in entry.themes],
+            )
+        for journal, task in tasks or []:
+            # tags + status folded into the searchable body so they're findable
+            fts_body = "\n".join(filter(None, [task.body, " ".join(task.tags), task.status]))
+            cur = conn.execute(
+                "INSERT INTO entries (journal, date, title, theme, source, line, body, kind) "
+                "VALUES (?,?,?,?,?,?,?, 'task')",
+                (
+                    journal,
+                    task.updated or task.created or "",
+                    task.title,
+                    None,
+                    str(task.path),
+                    0,
+                    task.body,
+                ),
+            )
+            conn.execute(
+                "INSERT INTO entries_fts (rowid, title, body) VALUES (?,?,?)",
+                (cur.lastrowid, task.title or "", fts_body),
             )
         conn.commit()
         return conn.execute("SELECT count(*) FROM entries").fetchone()[0]
@@ -119,7 +149,20 @@ def source_signature(path: Path) -> str:
     journal_md = path / "JOURNAL.md"
     if journal_md.exists():
         st = journal_md.stat()
-        return f"m:{st.st_mtime_ns}:{st.st_size}"
+        sig = f"m:{st.st_mtime_ns}:{st.st_size}"
+        # tasks/ is not reflected in JOURNAL.md, so fold it in: a task add, edit,
+        # or delete must also mark the source stale (tasks are indexed too).
+        tasks_dir = path / "tasks"
+        if tasks_dir.is_dir():
+            h = hashlib.sha256()
+            for f in sorted(tasks_dir.glob("*.md")):
+                try:
+                    tst = f.stat()
+                except OSError:
+                    continue
+                h.update(f"{f.name}\0{tst.st_mtime_ns}\0{tst.st_size}\0".encode())
+            sig += ":t:" + h.hexdigest()[:12]
+        return sig
     h = hashlib.sha256()
     for f in sorted(path.rglob("*.md")):
         try:
@@ -168,7 +211,7 @@ def search(
     conn.row_factory = sqlite3.Row
     try:
         sql = """
-            SELECT e.journal, e.date, e.title, e.theme, e.source, e.line,
+            SELECT e.journal, e.date, e.title, e.theme, e.source, e.line, e.kind,
                    snippet(entries_fts, 1, '**', '**', ' … ', 12) AS snippet,
                    bm25(entries_fts) AS rank
             FROM entries_fts
@@ -249,7 +292,7 @@ def list_themes(db_path: Path) -> list[dict]:
                 "GROUP BY t.theme, e.journal "
                 "UNION ALL "
                 "SELECT '(unthemed)' AS theme, journal, count(*) AS entries "
-                "FROM entries WHERE id NOT IN (SELECT entry_id FROM entry_themes) "
+                "FROM entries WHERE kind = 'entry' AND id NOT IN (SELECT entry_id FROM entry_themes) "
                 "GROUP BY journal "
                 "ORDER BY entries DESC"
             )
@@ -262,7 +305,7 @@ def entries_over_time(db_path: Path, theme: str | None = None, journal: str | No
     conn = sqlite3.connect(db_path)
     conn.row_factory = sqlite3.Row
     try:
-        sql = "SELECT substr(date,1,7) AS month, count(*) AS entries FROM entries WHERE 1=1"
+        sql = "SELECT substr(date,1,7) AS month, count(*) AS entries FROM entries WHERE kind = 'entry'"
         params: list = []
         if theme:
             sql += " AND id IN (SELECT entry_id FROM entry_themes WHERE theme = ?)"

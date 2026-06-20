@@ -152,8 +152,9 @@ resolves it cleanly: two kinds, different rules, neither bent. The driving use
 case is a running task list kept alongside the journal (priorities, items
 waiting on others) where picking a task back up should surface the entry that
 gave it context (UC7). Markdown stays the source of truth for both; a task is
-just the mutable file. Tasks live outside the disposable search index — they're
-real data, loaded from their files directly.
+just the mutable file. Tasks are mutated by loading their files directly, but
+they are **also indexed alongside entries** so `search_journal` spans the whole
+archive — see "Tasks are indexed too" below.
 
 A **blog-topic backlog** is the same kind, not a separate tool: a blog topic is
 a task tagged `blog` — title + the entry that sparked it + a done flag —
@@ -176,6 +177,25 @@ would bury the journal's signal (lessons, patterns) in noise. So
 `update_task(status="done", reflection=…)` graduates the ones worth remembering.
 The two kinds stay distinct (tasks keep `status`/`priority`/`blocked_by`; entries
 stay immutable and themed); only this bridge crosses between them, future → past.
+
+## Tasks are indexed too (reverses a 0.1.0 choice)
+
+**Decision:** Tasks are written into the same SQLite/FTS index as entries, so
+`search_journal` returns both (each result carries `kind` = `entry` | `task`). A
+task's `tags` and `status` are folded into its searchable body, so a query like
+"blog" surfaces a task tagged `blog`. The managed-journal staleness signature
+folds in a hash of `tasks/`, so adding, editing, or completing a task rebuilds
+the index on the next query. Entry-only views (`list_themes`,
+`entries_over_time`) stay entry-only.
+
+**Rationale:** 0.1.0 deliberately kept tasks out of the index ("loaded from
+their files directly"). In real use that was wrong: a user files blog ideas,
+plans, and reference docs as tasks, then *can't find them* — `search_journal`
+and the journal views act empty, defeating the recall the tool exists for. The
+index is disposable and rebuilt wholesale, so adding tasks to it costs nothing
+structurally and makes "one place, searchable" actually true. Tasks remain
+mutated through their files (the index never owns them); it only mirrors them
+for search.
 
 ## Deliberately out of 0.1.0
 

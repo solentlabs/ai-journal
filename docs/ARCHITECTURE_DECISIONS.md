@@ -163,6 +163,20 @@ or curate a list, which is the whole point. The `blog_angles` entry field stays
 as the in-the-moment seed; promoting a seed to a tracked topic is one
 `add_task`.)
 
+**Tasks are planned future; entries are completed past — graduation is a one-way
+bridge on `update_task`, not a separate verb.** Completing a task is itself just
+an update (`status → done`), so the bridge rides on `update_task` rather than its
+own tool: pass a `reflection` and it also writes a dated entry from the task
+(title from the task, body the reflection) and links the two. It is deliberate,
+not automatic, because the relationship isn't one-to-one — most checkboxes ("fix
+CI flake") don't deserve a permanent entry, and a single work session usually
+finishes several tasks but yields one entry. Auto-converting every completion
+would bury the journal's signal (lessons, patterns) in noise. So
+`update_task(status="done")` alone quietly closes a trivial task, while
+`update_task(status="done", reflection=…)` graduates the ones worth remembering.
+The two kinds stay distinct (tasks keep `status`/`priority`/`blocked_by`; entries
+stay immutable and themed); only this bridge crosses between them, future → past.
+
 ## Deliberately out of 0.1.0
 
 **Decision:** Two would-be features are intentionally not built for 0.1.0, and

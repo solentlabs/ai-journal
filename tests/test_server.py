@@ -72,6 +72,24 @@ def test_add_entry_full_cycle(journals):
     assert server.search_journal("captured wisdom")[0]["title"] == "Fresh Capture"
 
 
+def test_update_task_with_reflection_graduates_into_searchable_entry(journals):
+    created = server.add_task("technical", "Write up the migration audit", body="audit notes")
+    res = server.update_task(
+        "technical",
+        created["id"],
+        status="done",
+        reflection="The migration guarantee held on live data.",
+        themes=["process"],
+    )
+    assert res["status"] == "done"
+    # the entry path is relative to the journal root; it exists and is searchable
+    assert res["entry"] and (journals / res["entry"]).exists()
+    assert server.search_journal("guarantee")[0]["title"] == "Write up the migration audit"
+    fetched = server.get_task("technical", created["id"])
+    assert fetched["status"] == "done"
+    assert any("write-up-the-migration-audit" in e for e in fetched["entries"])
+
+
 def test_add_entry_rejects_bad_targets(journals):
     with pytest.raises(ValueError, match="read-only"):
         server.add_entry("deals", "Nope", "body")

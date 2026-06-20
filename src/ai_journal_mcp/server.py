@@ -172,12 +172,21 @@ def update_task(
     entries: list[str] | None = None,
     body: str | None = None,
     tags: list[str] | None = None,
+    reflection: str | None = None,
+    themes: list[str] | str | None = None,
+    entry_date: str | None = None,
 ) -> dict:
     """Change a task in place — only the fields you pass. status: open|blocked|
-    done; priority: high|medium|low; tags are free-form grouping labels."""
+    done; priority: high|medium|low; tags are free-form grouping labels. Pass
+    `reflection` to graduate the task into a journal entry as you complete it
+    (title from the task, body = reflection, optional `themes`) — the
+    planned-future to completed-past bridge; the entry is written, linked, and
+    indexed. Omit it to just update fields."""
+    root = _managed_root(journal)
+    when = date.fromisoformat(entry_date) if entry_date else None
     try:
         task = tasks.update_task(
-            _managed_root(journal),
+            root,
             task_id,
             status=status,
             priority=priority,
@@ -185,10 +194,18 @@ def update_task(
             entries=entries,
             body=body,
             tags=tags,
+            reflection=reflection,
+            themes=themes,
+            when=when,
         )
     except tasks.TaskError as exc:
         raise ValueError(str(exc)) from exc
-    return {"id": task.id, "status": task.status, "priority": task.priority, "tags": task.tags}
+    result: dict[str, object] = {"id": task.id, "status": task.status, "priority": task.priority, "tags": task.tags}
+    if reflection is not None:
+        refresh_views(root)
+        _reindex()
+        result["entry"] = task.entries[-1] if task.entries else None
+    return result
 
 
 @mcp.tool()

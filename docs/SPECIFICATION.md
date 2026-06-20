@@ -154,7 +154,7 @@ edits to those.
 | `suggest_themes(text, limit=5)` | Existing themes ranked by FTS similarity to `text`; suggestion only, writes nothing |
 | `entries_over_time(theme?, journal?)` | (month, count) rows ascending |
 | `add_task(journal, title, body?, priority=medium, blocked_by?, entries?, tags?)` | Create a task (status `open`) in a managed journal; returns its id |
-| `update_task(journal, task_id, status?, priority?, blocked_by?, entries?, body?, tags?)` | Mutate a task in place; only the passed fields change |
+| `update_task(journal, task_id, status?, priority?, blocked_by?, entries?, body?, tags?, reflection?, themes?, entry_date?)` | Mutate a task in place (only passed fields change). Pass `reflection` to also graduate it into a dated journal entry — the planned-future → completed-past bridge: writes an entry (title from the task, body = `reflection`, optional `themes`) and links it back |
 | `list_tasks(journal?, status?, priority?, tag?)` | Tasks, open/high-priority first; each carries `ready`, `tags`, and `entries` |
 | `get_task(journal, task_id)` | Full task detail incl. `entries` to pull context via `get_entry` |
 | `reindex()` | Full rebuild from sources |

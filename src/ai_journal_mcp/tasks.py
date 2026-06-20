@@ -153,8 +153,18 @@ def update_task(
     entries: list[str] | None = None,
     body: str | None = None,
     tags: list[str] | None = None,
+    reflection: str | None = None,
+    themes: list[str] | str | None = None,
+    when: date | None = None,
 ) -> Task:
-    """Mutate a task in place; only the fields passed are changed."""
+    """Mutate a task in place; only the fields passed are changed.
+
+    Completing a task is itself an update (``status="done"``). Pass ``reflection``
+    to also *graduate* it into a dated journal entry — the planned-future to
+    completed-past bridge: a new entry is written (title from the task, body =
+    ``reflection``, optional ``themes``) and linked back via ``entries``. Omit
+    ``reflection`` to just close or edit the task without writing an entry.
+    """
     task = get_task(root, task_id)
     if status is not None:
         task.status = status
@@ -168,6 +178,13 @@ def update_task(
         task.body = body
     if tags is not None:
         task.tags = list(tags)
+    if reflection is not None:
+        from .store import write_entry
+
+        path = write_entry(root, when or date.today(), task.title, reflection, themes=themes)
+        rel = str(path.relative_to(root)) if path.is_relative_to(root) else str(path)
+        if rel not in task.entries:
+            task.entries.append(rel)
     _validate(task.status, task.priority)
     task.updated = date.today().isoformat()
     _write(task)

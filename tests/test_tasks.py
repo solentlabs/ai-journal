@@ -77,6 +77,38 @@ def test_update_blocked_by_entries_body(tmp_path):
     assert reloaded.tags == ["blog"]
 
 
+def test_update_with_reflection_graduates_to_entry(tmp_path):
+    from datetime import date
+
+    from ai_journal_mcp.store import load_managed
+
+    t = create_task(tmp_path, "Ship the staleness writeup", body="rough notes", tags=["blog"])
+    done = update_task(
+        tmp_path,
+        t.id,
+        status="done",
+        reflection="What shipping it taught me.",
+        themes=["writing"],
+        when=date(2026, 6, 20),
+    )
+    # completing is an update; the reflection graduates it into a linked entry
+    assert done.status == "done"
+    assert any("ship-the-staleness-writeup" in e for e in done.entries)
+    # a real, immutable journal entry now exists carrying the reflection + theme
+    [entry] = load_managed(tmp_path)
+    assert entry.title == "Ship the staleness writeup"
+    assert "What shipping it taught me." in entry.body
+    assert "writing" in entry.themes
+
+
+def test_update_without_reflection_writes_no_entry(tmp_path):
+    from ai_journal_mcp.store import load_managed
+
+    t = create_task(tmp_path, "Fix CI flake")
+    update_task(tmp_path, t.id, status="done")  # quiet close — trivial task, no entry
+    assert load_managed(tmp_path) == []
+
+
 @pytest.fixture
 def managed(tmp_path, monkeypatch):
     root = tmp_path / "tech"

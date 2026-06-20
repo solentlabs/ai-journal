@@ -2,14 +2,14 @@ import tarfile
 
 import pytest
 
-from ai_journal.cli import main
-from ai_journal.consolidate import (
+from ai_journal_mcp.cli import main
+from ai_journal_mcp.consolidate import (
     ConsolidationError,
     apply_consolidation,
     format_report,
     scan_sources,
 )
-from ai_journal.store import load_managed
+from ai_journal_mcp.store import load_managed
 
 # Two sources that share one titled entry (identical body -> a cross-source
 # duplicate) plus a distinct date-only log each.

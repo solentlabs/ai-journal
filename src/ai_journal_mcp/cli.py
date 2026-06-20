@@ -84,7 +84,7 @@ def _init(args: argparse.Namespace) -> int:
         print(f"Registered '{label}' in journals.toml")
     else:
         print(f"A journal named '{label}' is already configured — left it unchanged")
-    print("Capture with the add_entry tool, or run `ai-journal serve` for the MCP.")
+    print("Capture with the add_entry tool, or run `ai-journal-mcp serve` for the MCP.")
     return 0
 
 
@@ -101,7 +101,7 @@ def _search(args: argparse.Namespace) -> int:
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(prog="ai-journal")
+    parser = argparse.ArgumentParser(prog="ai-journal-mcp")
     sub = parser.add_subparsers(dest="command", required=True)
 
     p_scan = sub.add_parser("scan", help="dry-run intake report for a journal directory")
@@ -142,7 +142,7 @@ def main(argv: list[str] | None = None) -> int:
     p_refresh = sub.add_parser("refresh", help="regenerate JOURNAL.md and themes/ views")
     p_refresh.add_argument("root", type=Path)
 
-    sub.add_parser("serve", help="run the MCP stdio server (requires ai-journal[server])")
+    sub.add_parser("serve", help="run the MCP stdio server (requires ai-journal-mcp[server])")
 
     args = parser.parse_args(argv)
 

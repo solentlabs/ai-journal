@@ -20,7 +20,7 @@ htmlcov/
 node_modules/
 package-lock.json
 
-# ai-journal indexes are disposable, never committed
+# ai-journal-mcp indexes are disposable, never committed
 *.db
 *.sqlite3
 

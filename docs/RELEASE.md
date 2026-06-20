@@ -1,4 +1,4 @@
-# Releasing ai-journal
+# Releasing ai-journal-mcp
 
 A release is `git tag` → automated publish. No manual build-and-upload.
 

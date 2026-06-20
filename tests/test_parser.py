@@ -12,8 +12,8 @@ from pathlib import Path
 
 import pytest
 
-from ai_journal.model import Entry
-from ai_journal.parser import parse_markdown
+from ai_journal_mcp.model import Entry
+from ai_journal_mcp.parser import parse_markdown
 
 FIXTURES_DIR = Path(__file__).parent / "fixtures" / "parser"
 # Every input *.md paired with its *.expected.json (skips README.md and any

@@ -136,7 +136,7 @@ def _generate_views(entries: list[Entry], root: Path, paths: dict[int, Path]) ->
     lines = [
         "# Development Journal",
         "",
-        "Managed by ai-journal. New entries go in `entries/YYYY-MM/`; this index is generated.",
+        "Managed by ai-journal-mcp. New entries go in `entries/YYYY-MM/`; this index is generated.",
         "",
         "## Recent Entries (last 7 days)",
         "",

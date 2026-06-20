@@ -57,7 +57,7 @@ A task is *ready* when its status isn't `done` and every `blocked_by` task is
 
 ## 2. journals.toml
 
-Default location: `~/.config/ai-journal/journals.toml`.
+Default location: `~/.config/ai-journal-mcp/journals.toml`.
 
 ```toml
 [[journal]]
@@ -132,7 +132,7 @@ destroys text. Rescue is idempotent.
 
 ## 7. Search Index
 
-SQLite at `~/.local/share/ai-journal/index.db` (CLI accepts `--db`).
+SQLite at `~/.local/share/ai-journal-mcp/index.db` (CLI accepts `--db`).
 Tables: `entries` (journal, date, title, theme, source, line, body) +
 `entries_fts` (FTS5, external content). Rebuilt from scratch on `reindex`;
 deleting the file is always safe. `theme` is the entry's first theme.
@@ -175,4 +175,4 @@ the only structured fields.
 | `reindex <roots...> --db <path>` | Build index from explicit paths |
 | `search <query> --db <path> [--limit/--theme/--since/--until]` | Query an index |
 | `refresh <root>` | Regenerate views per §6 |
-| `serve` | Run the MCP stdio server (requires `ai-journal[server]`) |
+| `serve` | Run the MCP stdio server (requires `ai-journal-mcp[server]`) |

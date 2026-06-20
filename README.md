@@ -1,4 +1,4 @@
-# ai-journal
+# ai-journal-mcp
 
 **A local MCP server for journaling, organizing, recalling, and tracking your work.**
 Capture what each session taught you, let it organize into a clean, queryable
@@ -27,7 +27,7 @@ already in:
 
 > **You:** "What do I keep relearning about AI-assisted development?"
 >
-> **Claude (via ai-journal):** *searches across months of entries, pulls the
+> **Claude (via ai-journal-mcp):** *searches across months of entries, pulls the
 > seven that recur on the theme, and synthesizes the through-line* — "You've
 > hit 'tests are an uneven safety net' three times since April; here are the
 > entries and the common trigger…"
@@ -37,7 +37,7 @@ Or capture without breaking flow:
 > **You:** "Journal that — the bit about auditing every artifact when a
 > hypothesis dies, not just the one with a test."
 >
-> *ai-journal writes `entries/2026-04/30-when-a-hypothesis-dies.md` with
+> *ai-journal-mcp writes `entries/2026-04/30-when-a-hypothesis-dies.md` with
 > themes and blog angles, regenerates the index views, and rebuilds search —
 > one call, everything consistent.*
 
@@ -49,7 +49,7 @@ Four capabilities, one local MCP server:
    a single lesson, or hand it a rough list to clean up. The `add_entry` tool
    takes freeform text and files it as a canonical entry (one per file,
    `entries/YYYY-MM/DD-slug.md`, with `themes`, `tags`, and `blog_angles`) — no
-   format discipline required. Prefer to write entries by hand? ai-journal
+   format discipline required. Prefer to write entries by hand? ai-journal-mcp
    reads what's already there as-is.
 2. **Organize** — themes are metadata, not folders, so one entry can carry
    several and no themed file grows without bound. The index and per-theme
@@ -80,7 +80,7 @@ Four capabilities, one local MCP server:
 - **It runs locally.** An MCP stdio server; your journal never leaves your
   machine.
 - **It doesn't demand ownership of every source.** Register a journal as
-  `indexed` and ai-journal reads and searches it in place but never rewrites
+  `indexed` and ai-journal-mcp reads and searches it in place but never rewrites
   it — ideal for a journal that already has its own conventions. `managed`
   journals are the ones it maintains for you. Both are searchable together, so
   cross-domain patterns ("what was I learning in engineering the week I learned
@@ -89,17 +89,17 @@ Four capabilities, one local MCP server:
 ## Quickstart
 
 ```bash
-git clone https://github.com/solentlabs/ai-journal && cd ai-journal
+git clone https://github.com/solentlabs/ai-journal-mcp && cd ai-journal-mcp
 ./scripts/setup.sh          # Python 3.11+: creates .venv, installs the tool
 ```
 
-Register your journals in `~/.config/ai-journal/journals.toml`:
+Register your journals in `~/.config/ai-journal-mcp/journals.toml`:
 
 ```toml
 [[journal]]
 name = "technical"
 path = "~/journal"
-mode = "managed"            # ai-journal owns the layout
+mode = "managed"            # ai-journal-mcp owns the layout
 
 [[journal]]
 name = "deal-research"
@@ -110,16 +110,16 @@ mode = "indexed"            # read-only; searched but never rewritten
 Wire it into Claude Code as an MCP server:
 
 ```bash
-claude mcp add ai-journal -- ai-journal serve
+claude mcp add ai-journal-mcp -- ai-journal-mcp serve
 ```
 
 Querying happens through the server (it builds and refreshes the index for
 you). The CLI handles intake and maintenance directly:
 
 ```bash
-ai-journal scan ~/old-journal            # dry-run intake report
-ai-journal migrate ~/old-journal --apply # rewrite into the managed layout
-ai-journal refresh ~/journal             # regenerate JOURNAL.md + theme views
+ai-journal-mcp scan ~/old-journal            # dry-run intake report
+ai-journal-mcp migrate ~/old-journal --apply # rewrite into the managed layout
+ai-journal-mcp refresh ~/journal             # regenerate JOURNAL.md + theme views
 ```
 
 ## Documentation

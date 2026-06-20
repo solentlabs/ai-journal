@@ -6,8 +6,8 @@ import tomllib
 from dataclasses import dataclass
 from pathlib import Path
 
-DEFAULT_CONFIG = Path("~/.config/ai-journal/journals.toml").expanduser()
-DEFAULT_DB = Path("~/.local/share/ai-journal/index.db").expanduser()
+DEFAULT_CONFIG = Path("~/.config/ai-journal-mcp/journals.toml").expanduser()
+DEFAULT_DB = Path("~/.local/share/ai-journal-mcp/index.db").expanduser()
 
 
 @dataclass

@@ -1,5 +1,5 @@
 
-Welcome to ai-journal!
+Welcome to ai-journal-mcp!
 
 No virtual environment yet. Set one up:
 

@@ -15,7 +15,7 @@ bad()  { echo -e "${YELLOW}!${NC} $*"; PROBLEMS=$((PROBLEMS + 1)); }
 PROBLEMS=0
 
 echo ""
-echo "ai-journal — dev environment check"
+echo "ai-journal-mcp — dev environment check"
 echo "=================================="
 
 # 1. venv exists
@@ -36,8 +36,8 @@ fi
 
 # 3. Package + key imports resolve (this is what fixes editor "problems")
 echo -e "${CYAN}[3/6]${NC} Imports"
-if [ -x .venv/bin/python ] && ./.venv/bin/python -c 'import ai_journal, yaml, mcp' 2>/dev/null; then
-    ok "ai_journal, yaml, mcp all importable"
+if [ -x .venv/bin/python ] && ./.venv/bin/python -c 'import ai_journal_mcp, yaml, mcp' 2>/dev/null; then
+    ok "ai_journal_mcp, yaml, mcp all importable"
 else
     bad "imports fail — run: ./.venv/bin/pip install -e \".[dev,server]\""
 fi

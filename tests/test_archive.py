@@ -2,7 +2,7 @@ import tarfile
 
 import pytest
 
-from ai_journal.archive import ArchiveError, archive_and_remove, verify_archive
+from ai_journal_mcp.archive import ArchiveError, archive_and_remove, verify_archive
 
 
 def _make_tree(tmp_path):
@@ -54,7 +54,7 @@ def test_aborts_without_deleting_when_verify_fails(tmp_path, monkeypatch):
     # must survive. (Previously unreachable in a test; the extraction makes it
     # a one-line monkeypatch of the now-separate verify step.)
     src = _make_tree(tmp_path)
-    monkeypatch.setattr("ai_journal.archive.verify_archive", lambda *a, **k: {"logs/a.md"})
+    monkeypatch.setattr("ai_journal_mcp.archive.verify_archive", lambda *a, **k: {"logs/a.md"})
     with pytest.raises(ArchiveError, match="missing"):
         archive_and_remove(src)
     assert src.exists()  # originals intact despite the archive existing

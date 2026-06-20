@@ -1,6 +1,6 @@
 {
   // ===========================================================================
-  // ai-journal — VS Code workspace settings (Linux / macOS / WSL2)
+  // ai-journal-mcp — VS Code workspace settings (Linux / macOS / WSL2)
   //
   // First time here?  Run  ./scripts/setup.sh  to create .venv and install
   // the package + dev tools, then reload the window.  Full guide:
@@ -13,7 +13,7 @@
 
   // --- Python interpreter ---------------------------------------------------
   // Point Pylance/pytest at the project venv. This is the single fix that
-  // clears the wall of "unresolved import" problems (mcp, yaml, ai_journal).
+  // clears the wall of "unresolved import" problems (mcp, yaml, ai_journal_mcp).
   // Must be the python BINARY, not the .venv directory.
   "python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python",
   // We activate the venv ourselves via the terminal profile below.

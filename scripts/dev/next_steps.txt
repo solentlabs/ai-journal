@@ -1,5 +1,5 @@
 
-ai-journal — (.venv) active
+ai-journal-mcp — (.venv) active
 
   make check    full gate: lint · format · type · docs · tests
   make test     tests with coverage

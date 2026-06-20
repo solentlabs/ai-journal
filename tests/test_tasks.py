@@ -1,8 +1,8 @@
 import pytest
 
-from ai_journal import server
-from ai_journal.config import JournalSource
-from ai_journal.tasks import (
+from ai_journal_mcp import server
+from ai_journal_mcp.config import JournalSource
+from ai_journal_mcp.tasks import (
     TaskError,
     create_task,
     get_task,

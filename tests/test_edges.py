@@ -1,8 +1,8 @@
 from pathlib import Path
 
-from ai_journal.intake import FileScan, format_report, scan_journal
-from ai_journal.model import slugify
-from ai_journal.parser import parse_file_with_fallback
+from ai_journal_mcp.intake import FileScan, format_report, scan_journal
+from ai_journal_mcp.model import slugify
+from ai_journal_mcp.parser import parse_file_with_fallback
 
 
 def test_slugify_truncates_on_word_boundary():

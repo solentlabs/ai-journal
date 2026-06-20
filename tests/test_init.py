@@ -1,9 +1,9 @@
 import pytest
 
-import ai_journal.config as config
-from ai_journal.cli import main
-from ai_journal.config import add_journal, load_config
-from ai_journal.store import init_journal, is_managed
+import ai_journal_mcp.config as config
+from ai_journal_mcp.cli import main
+from ai_journal_mcp.config import add_journal, load_config
+from ai_journal_mcp.store import init_journal, is_managed
 
 
 def test_init_creates_managed_journal_and_registers(tmp_path):

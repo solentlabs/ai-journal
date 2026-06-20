@@ -3,9 +3,9 @@ from pathlib import Path
 
 import pytest
 
-from ai_journal import server
-from ai_journal.config import JournalSource
-from ai_journal.store import write_entry
+from ai_journal_mcp import server
+from ai_journal_mcp.config import JournalSource
+from ai_journal_mcp.store import write_entry
 
 
 @pytest.fixture
@@ -45,7 +45,7 @@ def test_stale_index_self_heals(journals):
     # out-of-band write (the skill fallback path): file + refreshed views,
     # no reindex — JOURNAL.md's newer mtime must trigger a rebuild on search
     write_entry(journals, date(2026, 6, 12), "Latecomer Entry", "latecomer body")
-    from ai_journal.migrate import refresh_views
+    from ai_journal_mcp.migrate import refresh_views
 
     refresh_views(journals)
     future = time.time() + 5
@@ -80,7 +80,7 @@ def test_add_entry_rejects_bad_targets(journals):
 
 
 def test_refresh_rescues_hand_added_journal_entry(journals):
-    from ai_journal.migrate import refresh_views
+    from ai_journal_mcp.migrate import refresh_views
 
     # an old session appends a dated entry directly to the generated view
     journal_md = journals / "JOURNAL.md"
@@ -90,7 +90,7 @@ def test_refresh_rescues_hand_added_journal_entry(journals):
     assert rescued == 1
     [saved] = [
         e
-        for e in __import__("ai_journal.store", fromlist=["load_managed"]).load_managed(journals)
+        for e in __import__("ai_journal_mcp.store", fromlist=["load_managed"]).load_managed(journals)
         if e.title == "Stray Insight"
     ]
     assert "stale session" in saved.body

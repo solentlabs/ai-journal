@@ -1,8 +1,8 @@
 from datetime import date
 from pathlib import Path
 
-from ai_journal.indexer import build_index, entries_over_time, list_themes, search, suggest_themes
-from ai_journal.model import Entry
+from ai_journal_mcp.indexer import build_index, entries_over_time, list_themes, search, suggest_themes
+from ai_journal_mcp.model import Entry
 
 
 def make_entry(d, title, body, themes=None):

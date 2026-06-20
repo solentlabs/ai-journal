@@ -1,6 +1,6 @@
 # Development
 
-How to set up, run, and check the ai-journal codebase. This is the
+How to set up, run, and check the ai-journal-mcp codebase. This is the
 authoritative dev-environment doc; `CLAUDE.md` and `README.md` point here
 rather than restating it. For what the code *does*, see `ARCHITECTURE.md` and
 `SPECIFICATION.md`.
@@ -20,7 +20,7 @@ rather than restating it. For what the code *does*, see `ARCHITECTURE.md` and
 ## Quickstart
 
 ```bash
-git clone <repo> && cd ai-journal
+git clone <repo> && cd ai-journal-mcp
 ./scripts/setup.sh        # creates .venv, installs the package + dev tools
 ```
 

@@ -30,6 +30,8 @@ words:
   - editorconfig
   - fastmcp
   - htmlcov
+  - scikit
+  - sklearn
   - isort
   - Makefiles
   - mccabe

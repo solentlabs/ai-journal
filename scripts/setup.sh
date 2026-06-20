@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# One-command dev environment setup for ai-journal.
+# One-command dev environment setup for ai-journal-mcp.
 #
 #   ./scripts/setup.sh
 #
@@ -41,7 +41,7 @@ else
 fi
 
 # --- 3. Install the package + dev/server extras (editable) ------------------
-info "Upgrading pip and installing ai-journal[dev,server] (editable) ..."
+info "Upgrading pip and installing ai-journal-mcp[dev,server] (editable) ..."
 ./.venv/bin/python -m pip install --quiet --upgrade pip
 ./.venv/bin/python -m pip install --quiet -e ".[dev,server]"
 ok "Dependencies installed"

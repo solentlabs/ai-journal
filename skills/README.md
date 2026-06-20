@@ -1,6 +1,6 @@
-# ai-journal skills
+# ai-journal-mcp skills
 
-Claude Code skills bundled with ai-journal. They're **model-invoked** — Claude
+Claude Code skills bundled with ai-journal-mcp. They're **model-invoked** — Claude
 loads one when its `description` matches what you're doing (e.g. "journal
 this"); no slash command required.
 

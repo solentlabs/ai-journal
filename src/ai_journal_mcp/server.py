@@ -1,7 +1,7 @@
 """MCP stdio server exposing the journal tool surface.
 
 Markdown is the source of truth; the SQLite index is rebuilt on demand.
-Journals come from ~/.config/ai-journal/journals.toml.
+Journals come from ~/.config/ai-journal-mcp/journals.toml.
 """
 
 from __future__ import annotations
@@ -17,7 +17,7 @@ from .migrate import refresh_views
 from .model import Entry
 from .store import load_source, write_entry
 
-mcp = FastMCP("ai-journal")
+mcp = FastMCP("ai-journal-mcp")
 
 
 def _sources():

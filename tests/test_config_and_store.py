@@ -2,8 +2,8 @@ from datetime import date
 
 import pytest
 
-from ai_journal.config import JournalSource, load_config
-from ai_journal.store import is_managed, load_managed, load_source, write_entry
+from ai_journal_mcp.config import JournalSource, load_config
+from ai_journal_mcp.store import is_managed, load_managed, load_source, write_entry
 
 
 def test_load_config(tmp_path):

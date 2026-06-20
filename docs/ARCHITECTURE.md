@@ -1,6 +1,6 @@
 # Architecture
 
-ai-journal turns plain-markdown work journals into a queryable system without
+ai-journal-mcp turns plain-markdown work journals into a queryable system without
 taking ownership of the data away from the user. This document describes the
 components and how data flows through them. For the rationale behind these
 choices, see `ARCHITECTURE_DECISIONS.md`; for exact formats, see
@@ -23,7 +23,7 @@ choices, see `ARCHITECTURE_DECISIONS.md`; for exact formats, see
                  ▼
         ┌────────┴────────┐
         ▼                 ▼
-   MCP server (stdio)   CLI (ai-journal)
+   MCP server (stdio)   CLI (ai-journal-mcp)
    search/get/add/...   scan/migrate/reindex/search/refresh/serve
 ```
 
@@ -47,7 +47,7 @@ library modules depend only downward (`store`/`intake`/`migrate` → `parser` �
 
 ## Journal Modes
 
-- **managed** — ai-journal owns the layout: one entry per file under
+- **managed** — ai-journal-mcp owns the layout: one entry per file under
   `entries/YYYY-MM/`, YAML frontmatter, generated index (`JOURNAL.md`) and
   per-theme views (`themes/*.md`). Writes happen only through
   `store.write_entry` (or migration).
@@ -74,7 +74,7 @@ writes `migration-report.md` recording every dedup decision.
 ## Trust Boundaries
 
 - The index database lives outside the journals
-  (`~/.local/share/ai-journal/index.db`) and is never the source of truth.
+  (`~/.local/share/ai-journal-mcp/index.db`) and is never the source of truth.
 - `get_entry` refuses paths outside configured journal roots.
 - Indexed sources are opened read-only by convention; no code path writes to
   them.

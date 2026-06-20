@@ -6,7 +6,7 @@ built, the contracts move to `SPECIFICATION.md` and the rationale to
 
 ## What it does
 
-One operation. Point ai-journal at **one or more source locations** and it:
+One operation. Point ai-journal-mcp at **one or more source locations** and it:
 
 1. reads every entry across all sources,
 2. removes duplicates across them (longest body wins, themes merged),
@@ -62,7 +62,7 @@ apply_consolidation(report, dest)
     -> ConsolidationResult(written, dropped_duplicates, archives, loss_check)
 
 CLI:
-  ai-journal consolidate <dest> --from <path>[:name] [--from ...] [--apply]
+  ai-journal-mcp consolidate <dest> --from <path>[:name] [--from ...] [--apply]
   # dry-run by default; --apply writes
 ```
 

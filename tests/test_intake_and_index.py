@@ -1,6 +1,6 @@
-from ai_journal.indexer import build_index, search
-from ai_journal.intake import scan_journal
-from ai_journal.model import slugify
+from ai_journal_mcp.indexer import build_index, search
+from ai_journal_mcp.intake import scan_journal
+from ai_journal_mcp.model import slugify
 
 # A small journal exercising the intake paths: a managed-style index file, a
 # per-theme file that repeats an entry (exact duplicate), an orphan with no

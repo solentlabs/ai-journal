@@ -1,6 +1,6 @@
 # Use Cases
 
-What ai-journal is for, expressed as the situations it serves. Each use case
+What ai-journal-mcp is for, expressed as the situations it serves. Each use case
 names the tools involved; contracts are in `SPECIFICATION.md`.
 
 ## UC1 — Capture an insight without leaving the work
@@ -79,8 +79,8 @@ upkeep was a human chore. Structural prevention beats scheduled cleanup.
 **Situation:** Another developer wants the same capture/query/intake loop
 for their own journals.
 
-**Flow:** `pip install ai-journal`, write `journals.toml`, `claude mcp add
-ai-journal -- ai-journal serve`, run `scan`/`migrate` on whatever they have.
+**Flow:** `pip install ai-journal-mcp`, write `journals.toml`, `claude mcp add
+ai-journal-mcp -- ai-journal-mcp serve`, run `scan`/`migrate` on whatever they have.
 Shippable Claude Code skills (capture + maintenance) package the habit, not
 just the engine.
 

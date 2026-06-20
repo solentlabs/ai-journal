@@ -1,4 +1,4 @@
-# ai-journal — developer task runner.
+# ai-journal-mcp — developer task runner.
 # Every recipe is pinned to the project venv so the editor, this Makefile,
 # CI, and the pre-commit hook all run the identical tool versions (SSOT).
 # Run `make` or `make help` for the menu. Full guide: docs/DEVELOPMENT.md
@@ -11,7 +11,7 @@ PY       := $(VENV_BIN)/python
         type-check lint-docs check clean reindex install-hooks
 
 help: ## Show this help
-	@echo "ai-journal — make targets:"
+	@echo "ai-journal-mcp — make targets:"
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) \
 		| awk 'BEGIN {FS = ":.*?## "} {printf "  \033[36m%-14s\033[0m %s\n", $$1, $$2}'
 
@@ -22,7 +22,7 @@ verify: ## Diagnose the dev environment (read-only)
 	@bash scripts/verify-setup.sh
 
 test: ## Run the full test suite with coverage
-	@$(VENV_BIN)/pytest --cov=ai_journal --cov-report=term-missing
+	@$(VENV_BIN)/pytest --cov=ai_journal_mcp --cov-report=term-missing
 
 test-quick: ## Run tests without coverage (fast feedback)
 	@$(VENV_BIN)/pytest
@@ -54,7 +54,7 @@ clean: ## Remove caches and the disposable index/coverage artifacts
 	@echo "Cleaned."
 
 reindex: ## Rebuild the local search index from configured journals
-	@$(VENV_BIN)/ai-journal reindex
+	@$(VENV_BIN)/ai-journal-mcp reindex
 
 install-hooks: ## Install the pre-commit git hook
 	@$(VENV_BIN)/pre-commit install

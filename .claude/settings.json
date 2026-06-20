@@ -8,9 +8,9 @@
       "Bash(.venv/bin/pytest:*)",
       "Bash(.venv/bin/ruff:*)",
       "Bash(.venv/bin/mypy:*)",
-      "Bash(.venv/bin/ai-journal scan:*)",
-      "Bash(.venv/bin/ai-journal search:*)",
-      "Bash(.venv/bin/ai-journal reindex:*)",
+      "Bash(.venv/bin/ai-journal-mcp scan:*)",
+      "Bash(.venv/bin/ai-journal-mcp search:*)",
+      "Bash(.venv/bin/ai-journal-mcp reindex:*)",
       "Bash(git status:*)",
       "Bash(git diff:*)",
       "Bash(git log:*)"

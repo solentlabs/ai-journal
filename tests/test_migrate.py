@@ -1,7 +1,7 @@
-from ai_journal.intake import scan_journal
-from ai_journal.migrate import apply_migration
-from ai_journal.parser import parse_file_with_fallback
-from ai_journal.store import load_managed
+from ai_journal_mcp.intake import scan_journal
+from ai_journal_mcp.migrate import apply_migration
+from ai_journal_mcp.parser import parse_file_with_fallback
+from ai_journal_mcp.store import load_managed
 
 # A messy pre-migration journal: an index file with two entries (one of which
 # is duplicated, with a longer body, in a per-theme file), a filename-dated

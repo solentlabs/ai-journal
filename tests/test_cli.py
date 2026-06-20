@@ -1,4 +1,4 @@
-from ai_journal.cli import main
+from ai_journal_mcp.cli import main
 
 # A minimal indexed journal: one dated entry plus an undated orphan.
 CLI_FILES = {

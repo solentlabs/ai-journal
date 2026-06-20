@@ -1,9 +1,9 @@
 ---
 name: capture
-description: Capture a work-session insight, lesson, decision, or "this could be a blog post" moment into an ai-journal managed journal via the add_entry MCP tool. Use when the user says to journal/log/record something, or at the end of a session worth remembering. Journal-agnostic — works with whatever journals are configured.
+description: Capture a work-session insight, lesson, decision, or "this could be a blog post" moment into an ai-journal-mcp managed journal via the add_entry MCP tool. Use when the user says to journal/log/record something, or at the end of a session worth remembering. Journal-agnostic — works with whatever journals are configured.
 ---
 
-# ai-journal — Capture
+# ai-journal-mcp — Capture
 
 Turn something worth keeping — a debugging pattern, a process lesson, a
 decision, a "this could be a post" idea — into a canonical journal entry.

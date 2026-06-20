@@ -2,8 +2,11 @@
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
+# The project was named `ai-journal` (matching ai-launcher/ai-monitor), but PyPI
+# rejected that as too similar to an existing project, so everything — package,
+# CLI command, import, repo — is `ai-journal-mcp` / `ai_journal_mcp`.
 [project]
-name = "ai-journal"
+name = "ai-journal-mcp"
 version = "0.1.0.dev0"
 description = "Journal engine and MCP server: capture, structure, and ask questions of your work journals"
 readme = "README.md"
@@ -44,14 +47,14 @@ dev = [
 ]
 
 [project.scripts]
-ai-journal = "ai_journal.cli:main"
+ai-journal-mcp = "ai_journal_mcp.cli:main"
 
 [project.urls]
-Homepage = "https://github.com/solentlabs/ai-journal"
-Issues = "https://github.com/solentlabs/ai-journal/issues"
+Homepage = "https://github.com/solentlabs/ai-journal-mcp"
+Issues = "https://github.com/solentlabs/ai-journal-mcp/issues"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/ai_journal"]
+packages = ["src/ai_journal_mcp"]
 
 # ---------------------------------------------------------------------------
 # Ruff — single tool for linting AND formatting (SSOT for code style).
@@ -74,7 +77,7 @@ ignore = [
 ]
 
 [tool.ruff.lint.isort]
-known-first-party = ["ai_journal"]
+known-first-party = ["ai_journal_mcp"]
 
 [tool.ruff.lint.mccabe]
 max-complexity = 12
@@ -116,7 +119,7 @@ addopts = "-q --strict-markers --strict-config"
 # Coverage — markdown is the source of truth; the .coverage file is disposable.
 # ---------------------------------------------------------------------------
 [tool.coverage.run]
-source = ["ai_journal"]
+source = ["ai_journal_mcp"]
 branch = true
 
 [tool.coverage.report]

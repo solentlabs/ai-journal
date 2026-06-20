@@ -17,7 +17,7 @@ scratch" is the recovery story for every index problem.
 
 ## Managed vs indexed journal modes
 
-**Decision:** Each configured journal is either `managed` (ai-journal owns
+**Decision:** Each configured journal is either `managed` (ai-journal-mcp owns
 the layout) or `indexed` (parsed in place, never written).
 
 **Rationale:** Forced by a real case: the Staysail deal-research journal
@@ -109,7 +109,7 @@ mypy, pytest, pre-commit) behind `[dev]`.
 
 **Rationale:** Matches the existing Solent Labs PyPI packages (har-capture,
 ai-launcher) so release tooling and muscle memory transfer. The `[server]`
-split keeps `pip install ai-journal` light for CLI-only users. The floor was
+split keeps `pip install ai-journal-mcp` light for CLI-only users. The floor was
 raised 3.10 → 3.11 once it surfaced that `config.py` imports the stdlib
 `tomllib` (3.11+) unconditionally: the package would have `ImportError`d on
 3.10 despite advertising it. Requiring 3.11 made the metadata honest without
@@ -194,12 +194,20 @@ rebuild, and there is nothing concrete to build for formats not yet seen — so
 both are terminal decisions, not deferred backlog. Recorded so the exclusions
 are deliberate and don't quietly reappear as open work.
 
-## Named `ai-journal`
+## Named `ai-journal-mcp` (was `ai-journal`)
 
-**Decision:** Package and repo are `ai-journal`, joining `ai-launcher` and
-`ai-monitor` as a product family.
+**Decision:** The package, PyPI distribution, CLI command, import package, and
+repo are all `ai-journal-mcp` / `ai_journal_mcp`. The on-disk config and data
+directories follow: `~/.config/ai-journal-mcp/`, `~/.local/share/ai-journal-mcp/`.
 
-**Rationale:** Family coherence, search obviousness, and a deliberate PyPI
-land grab (name verified free 2026-06-11). Nautical names (shipslog,
-soundings) were considered and rejected as too cute for a tool meant for
-strangers to find.
+**Rationale:** The project was originally `ai-journal`, chosen for family
+coherence with `ai-launcher` and `ai-monitor`, search obviousness, and rejecting
+nautical names (shipslog, soundings) as too cute. At PyPI registration `ai-journal`
+was rejected as too similar to an existing project — the similarity guard is
+broader than the plain availability check that read clear on 2026-06-11. Only the
+*distribution* name strictly had to change, but a split (publish `ai-journal-mcp`,
+keep everything else `ai-journal`, the scikit-learn/sklearn pattern) was rejected
+in favour of one name everywhere: the small per-package consistency beats matching
+the `ai-*` siblings, and `-mcp` accurately signals what the package is. The cost
+was a one-time rename while there were no external users and a single local config
+dir to move.

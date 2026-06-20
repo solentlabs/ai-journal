@@ -35,7 +35,7 @@
 
 - Use the project venv. Prefer the make targets (they pin to `.venv/bin` and
   match CI): `make test`, `make check`, `make lint-fix`. Direct equivalents:
-  `.venv/bin/pytest -q`, `.venv/bin/ai-journal ...`. Setup: `./scripts/setup.sh`.
+  `.venv/bin/pytest -q`, `.venv/bin/ai-journal-mcp ...`. Setup: `./scripts/setup.sh`.
   Full guide in `docs/DEVELOPMENT.md`.
 - Before declaring work done, run `make check` (lint + format-check +
   type-check + full suite with coverage). It must be green.
@@ -51,6 +51,6 @@
     `tests/conftest.py`, not ad-hoc inline file-writing.
 - The MCP server (`server.py`) is a thin layer; logic belongs in the
   library modules so it stays testable without an MCP client.
-- Ken's live journals are configured in `~/.config/ai-journal/journals.toml`.
+- Ken's live journals are configured in `~/.config/ai-journal-mcp/journals.toml`.
   Do not run `migrate --apply` or bulk-edit scripts against them without an
   explicit request and a fresh backup.

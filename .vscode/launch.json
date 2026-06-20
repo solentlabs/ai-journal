@@ -31,10 +31,10 @@
       "justMyCode": false
     },
     {
-      "name": "ai-journal: MCP server (stdio)",
+      "name": "ai-journal-mcp: MCP server (stdio)",
       "type": "debugpy",
       "request": "launch",
-      "module": "ai_journal.server",
+      "module": "ai_journal_mcp.server",
       "console": "integratedTerminal",
       "cwd": "${workspaceFolder}",
       "justMyCode": false

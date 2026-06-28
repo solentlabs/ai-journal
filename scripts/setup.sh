@@ -75,5 +75,14 @@ echo "  • Activate:    source .venv/bin/activate   (VS Code terminals do this 
 echo "  • Run checks:  make check"
 echo "  • Run tests:   make test"
 echo "  • In VS Code:  reload the window so Pylance picks up .venv/bin/python"
+
+# Claude Code trust nudge — only when this checkout isn't a trusted workspace
+# yet (so its committed permission allowlist would be ignored). Mirrors the
+# VS Code folder-open Welcome task, for contributors who only use the CLI.
+if command -v python3 >/dev/null 2>&1 && ! python3 scripts/dev/trust_workspace.py --check >/dev/null 2>&1; then
+    echo "  • Claude Code: run 'make trust' to trust this workspace (clears the"
+    echo "                 'permissions ignored — not trusted' warning)"
+fi
+
 echo ""
 echo "Full guide: docs/DEVELOPMENT.md"

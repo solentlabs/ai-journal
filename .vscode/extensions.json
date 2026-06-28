@@ -32,6 +32,8 @@
     "ms-python.pylint",
     "ms-python.autopep8",
     "littlefoxteam.vscode-python-test-adapter",  // conflicts with native pytest
-    "hbenl.vscode-test-explorer"
+    "hbenl.vscode-test-explorer",
+    "ms-vscode.makefile-tools",   // our Makefile is a task runner, not a C/C++ build
+    "ms-vscode.cpptools"          // no C/C++ in this project
   ]
 }

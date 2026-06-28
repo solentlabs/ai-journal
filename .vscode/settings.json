@@ -43,6 +43,13 @@
   "python.testing.pytestArgs": ["tests"],
   "python.testing.autoTestDiscoverOnSaveEnabled": true,
 
+  // --- Editor noise suppression ---------------------------------------------
+  // The Makefile here is a task runner that delegates to Python tooling, NOT a
+  // C/C++ build. Stop the Makefile Tools extension from prompting to configure
+  // C++ IntelliSense from it on folder-open. Harmless no-op if that extension
+  // isn't installed; see extensions.json where it's marked unwanted.
+  "makefile.configureOnOpen": false,
+
   // --- File hygiene (mirrors .editorconfig / .gitattributes) ----------------
   "files.eol": "\n",
   "files.trimTrailingWhitespace": true,

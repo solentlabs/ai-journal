@@ -27,9 +27,12 @@
    recoverable copy and be covered by a test proving it.
 4. **Indexed-mode journals are read-only.** Never restructure or write to a
    source configured with `mode = "indexed"`.
-5. **No git staging or committing.** Never run *or suggest* `git add`,
-   `git rm --cached`, `git restore --staged`, `git commit`, or `git push`.
-   Present what changed (a file list or diff) and stop — Ken stages and commits.
+5. **Staging is the user's alone.** Never run *or suggest* `git add`,
+   `git rm --cached`, or `git restore --staged` — staging the index is the
+   user's job, period. Claude **may** `git commit` and `git push`, but **only
+   with the user's explicit permission in the moment** (never unprompted); commit
+   what the user has already staged, don't stage more. Otherwise, present what
+   changed (a file list or diff) and stop.
 
 ## Working in This Repo
 
@@ -51,6 +54,6 @@
     `tests/conftest.py`, not ad-hoc inline file-writing.
 - The MCP server (`server.py`) is a thin layer; logic belongs in the
   library modules so it stays testable without an MCP client.
-- Ken's live journals are configured in `~/.config/ai-journal-mcp/journals.toml`.
+- The user's live journals are configured in `~/.config/ai-journal-mcp/journals.toml`.
   Do not run `migrate --apply` or bulk-edit scripts against them without an
   explicit request and a fresh backup.

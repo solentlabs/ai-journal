@@ -26,6 +26,7 @@ words:
   - conftest
   - dataclass
   - debugpy
+  - delenv
   - dedups
   - editorconfig
   - fastmcp
@@ -57,6 +58,7 @@ words:
   - venv
 
   # Project conventions / acronyms
+  - idempotently
   - SSOT
 
   # Editor / extension publisher IDs (appear in .vscode/*.json)

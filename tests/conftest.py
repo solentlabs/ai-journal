@@ -13,6 +13,7 @@ Testing taxonomy (mirrors the sibling Cable Modem Monitor repo):
 
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 import pytest
@@ -43,5 +44,25 @@ def make_journal(tmp_path: Path):
             dest.parent.mkdir(parents=True, exist_ok=True)
             dest.write_text(text, encoding="utf-8")
         return root
+
+    return _make
+
+
+@pytest.fixture
+def claude_config(tmp_path: Path):
+    """Factory for a ``~/.claude.json``-style config file under ``tmp_path``.
+
+    Returns the path. Pass a ``dict`` to seed valid JSON, a ``str`` to seed raw
+    bytes (for malformed / blank-file cases), or omit ``content`` for a path to
+    a not-yet-created file. Keeps trust-config test data out of the test bodies,
+    mirroring ``make_journal``.
+    """
+
+    def _make(content: dict | str | None = None, name: str = ".claude.json") -> Path:
+        path = tmp_path / name
+        if content is not None:
+            text = content if isinstance(content, str) else json.dumps(content)
+            path.write_text(text, encoding="utf-8")
+        return path
 
     return _make

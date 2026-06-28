@@ -7,7 +7,7 @@ VENV_BIN := .venv/bin
 PY       := $(VENV_BIN)/python
 
 .DEFAULT_GOAL := help
-.PHONY: help setup verify test test-quick lint lint-fix format format-check \
+.PHONY: help setup verify trust test test-quick lint lint-fix format format-check \
         type-check lint-docs check clean reindex install-hooks
 
 help: ## Show this help
@@ -20,6 +20,9 @@ setup: ## Create .venv and install the package + dev tools (idempotent)
 
 verify: ## Diagnose the dev environment (read-only)
 	@bash scripts/verify-setup.sh
+
+trust: ## Trust this checkout as a Claude Code workspace (writes ~/.claude.json)
+	@python3 scripts/dev/trust_workspace.py
 
 test: ## Run the full test suite with coverage
 	@$(VENV_BIN)/pytest --cov=ai_journal_mcp --cov-report=term-missing

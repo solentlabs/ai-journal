@@ -1,0 +1,11 @@
+
+──────────────────────────────────────────────────────────────
+Claude Code: this workspace isn't trusted yet, so the committed
+permission allowlist (.claude/settings.json) is being ignored —
+you'll get extra approval prompts until you trust it once:
+
+  make trust
+
+Or from VS Code — Ctrl+P, then type  >Tasks: Run Task
+  • Trust workspace for Claude Code
+──────────────────────────────────────────────────────────────

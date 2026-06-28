@@ -21,6 +21,15 @@
       "problemMatcher": []
     },
     {
+      // Clears Claude Code's "this workspace has not been trusted" warning by
+      // recording the trust flag for this checkout in ~/.claude.json (per-user,
+      // per-path — it can't live in the repo). Idempotent. See `make trust`.
+      "label": "Trust workspace for Claude Code",
+      "type": "shell",
+      "command": "make trust",
+      "problemMatcher": []
+    },
+    {
       "label": "Test: All (coverage)",
       "type": "shell",
       "command": "make test",

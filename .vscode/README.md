@@ -9,7 +9,7 @@ setup guide is [`docs/DEVELOPMENT.md`](../docs/DEVELOPMENT.md).
 | `settings.json` | Points Pylance/pytest at `.venv`, makes **Ruff** the formatter (format + organize-imports on save), enables pytest discovery, and auto-activates the venv in new terminals. |
 | `extensions.json` | Recommends the handful of extensions this project uses, and marks conflicting ones (black, isort, flake8, pylint) as unwanted. |
 | `launch.json` | Debug configs: current file, current test file, `-k` pattern, and the MCP server. |
-| `tasks.json` | Wraps the `Makefile` targets so the palette runs the same commands as the terminal. |
+| `tasks.json` | Wraps the `Makefile` targets so the palette runs the same commands as the terminal. Includes a **Welcome** task that runs on folder-open and a **Trust workspace for Claude Code** task (see below). |
 
 ## First-time setup
 
@@ -22,6 +22,16 @@ isn't selected yet:
 
 When prompted, install the recommended extensions — Ruff and Pylance do the
 heavy lifting.
+
+## Using Claude Code here?
+
+If Claude Code warns that it's *"Ignoring N permissions.allow entries … this
+workspace has not been trusted"*, it's refusing to honor this repo's committed
+`.claude/settings.json` allowlist until you trust the checkout. Trust lives
+per-user, per-path in `~/.claude.json`, so it can't ship in the repo. Run the
+**Trust workspace for Claude Code** task once (or `make trust`). The
+folder-open Welcome message nudges you until it's done. More in
+[`docs/DEVELOPMENT.md`](../docs/DEVELOPMENT.md#troubleshooting).
 
 ## Why Ruff-only?
 

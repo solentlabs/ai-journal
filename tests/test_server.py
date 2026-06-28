@@ -158,6 +158,55 @@ def test_tasks_are_searchable_and_tagged_words_match(journals):
     assert server.entries_over_time(journal="technical") == [{"month": "2026-06", "entries": 1}]
 
 
+def test_suggest_themes_surfaces_existing_theme(journals):
+    server.reindex()
+    # the seed entry is themed "modems"; similar text should suggest it
+    assert "modems" in server.suggest_themes("hnap discovery notes")
+
+
+def test_list_tasks_skips_readonly_and_applies_filters(journals):
+    high = server.add_task("technical", "High work", priority="high")
+    server.add_task("technical", "Low work", priority="low")
+    # the indexed "deals" source is read-only and must never appear
+    listed = server.list_tasks()
+    assert {t["journal"] for t in listed} == {"technical"}
+    assert len(listed) == 2
+    # status filter excludes the open tasks (none are done)
+    assert server.list_tasks(status="done") == []
+    # priority filter narrows to the one high-priority task
+    assert [t["id"] for t in server.list_tasks(priority="high")] == [high["id"]]
+    # an unknown journal filter yields nothing
+    assert server.list_tasks(journal="ghost") == []
+    # a tag filter that matches no task's tags yields nothing
+    assert server.list_tasks(tag="absent") == []
+
+
+def test_update_task_without_reflection_returns_fields_only(journals):
+    created = server.add_task("technical", "Tweak priority", priority="medium")
+    res = server.update_task("technical", created["id"], priority="high")
+    assert res["priority"] == "high"
+    assert "entry" not in res  # no reflection -> no graduated entry
+
+
+def test_add_task_error_becomes_value_error(journals):
+    with pytest.raises(ValueError, match="priority"):
+        server.add_task("technical", "Bad priority", priority="bogus")
+
+
+def test_task_lookup_errors_become_value_errors(journals):
+    with pytest.raises(ValueError, match="no task"):
+        server.get_task("technical", "missing-id")
+    with pytest.raises(ValueError, match="no task"):
+        server.update_task("technical", "missing-id", status="done")
+
+
+def test_main_runs_the_mcp_server(monkeypatch):
+    ran = {}
+    monkeypatch.setattr(server.mcp, "run", lambda: ran.setdefault("ran", True))
+    server.main()
+    assert ran["ran"] is True
+
+
 def test_new_task_makes_index_stale_and_self_heals(journals):
     from ai_journal_mcp.migrate import refresh_views
 

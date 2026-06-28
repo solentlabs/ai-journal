@@ -43,6 +43,7 @@ the *identical* commands. `make` (or `make help`) lists them:
 | ------- | ------------ |
 | `make setup` | Create `.venv` and install (idempotent). |
 | `make verify` | Read-only health check of the environment. |
+| `make trust` | Trust this checkout as a Claude Code workspace (idempotent). |
 | `make test` | Full test suite with coverage. |
 | `make test-quick` | Tests without coverage (fast inner loop). |
 | `make lint` / `make lint-fix` | Ruff lint (and auto-fix). |
@@ -139,6 +140,21 @@ nothing.
 **`make lint-docs` / `make check` fails with "Node.js + npm are required"** —
 the doc linters are Node tools. Install Node 18+ and re-run; `make lint-docs`
 installs the pinned linters on first run.
+
+**Claude Code says "Ignoring N permissions.allow entries … this workspace has
+not been trusted"** — Claude Code won't honor this repo's committed
+`.claude/settings.json` allowlist until you trust the checkout. Trust is
+recorded per-user, per-path in `~/.claude.json`, so it can't ship in the repo.
+Fix it once:
+
+```bash
+make trust          # or the "Trust workspace for Claude Code" VS Code task
+```
+
+This idempotently sets `hasTrustDialogAccepted` for this checkout's absolute
+path and touches nothing else. The folder-open Welcome message nudges you until
+it's done. (Accepting the interactive trust dialog when you first run Claude
+Code here does the same thing.)
 
 **Start over** — `rm -rf .venv node_modules && ./scripts/setup.sh`.
 
